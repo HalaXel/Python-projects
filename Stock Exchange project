@@ -1,0 +1,259 @@
+import random
+
+class Orderbook:
+    def __init__(self, client_id, stock_name, stock_price, stock_size, order_status):
+        self.client_id = client_id
+        self.stock_name = stock_name
+        self.stock_price = stock_price
+        self.stock_size = stock_size
+        self.order_status = order_status
+
+    def __str__(self):
+        return (f"Client ID: {self.client_id}, Stock Name: {self.stock_name}, Price: {self.stock_price},"
+                f" Size: {self.stock_size}, Status: {self.order_status}")
+
+
+class Buyorder(Orderbook):
+    def __init__(self, client_id, stock_name, buy_price, buy_size, order_status):
+        super().__init__(client_id, stock_name, buy_price, buy_size, order_status)
+
+    def __str__(self):
+        return f"{super().__str__()}, Buy Price: {self.stock_price}, Buy Size: {self.stock_size}"
+
+
+class Sellorder(Orderbook):
+    def __init__(self, client_id, stock_name, sell_price, sell_size, order_status):
+        super().__init__(client_id, stock_name, sell_price, sell_size, order_status)
+
+    def __str__(self):
+        return f"{super().__str__()}, Sell Price: {self.stock_price}, Sell Size: {self.stock_size}"
+
+
+
+stock_names = ['BARC', 'HSBC', 'LLOY', 'NWG', 'MTRO', 'STAN', 'OSB', 'PAG', 'SBS', 'VMUK',
+               'JPM', 'BAC', 'GS', 'DB', 'WFC', 'C', 'CFG', 'MS', 'PNC', 'USB', 'COF',
+               'TFC', 'FITB', 'RF', 'CBG', 'SBS', 'TBCG', 'MFX', 'ALD', 'INVP']
+
+
+bids = []
+     #looping stocks, attaching price and size to each one, appending to bids list and running through the class
+for i in range(30):
+    stock_name = stock_names[i]
+    client_id = round(random.randint(1, 500), 0)
+    buy_price = round(random.uniform(90, 100), 2)
+    buy_size = round(random.uniform(200, 300), 0)
+    order_status = "Pending"
+    bids.append(Buyorder(client_id, stock_name, buy_price, buy_size, order_status))
+
+
+asks = []
+     #looping stocks, attaching price and size to each one, appending the asks list and running through the class
+for i in range(30):
+    stock_name = stock_names[i]
+    client_id = round(random.randint(1, 500), 0)
+    sell_price = round(random.uniform(90, 100), 2)
+    sell_size = round(random.uniform(200, 300), 0)
+    order_status = "Pending"
+    asks.append(Sellorder(client_id, stock_name, sell_price, sell_size, order_status))
+
+
+
+
+
+
+trades = []
+     # Loop through each buy order and sell order and finding matches
+for buy in bids:
+    for sell in asks:
+        if buy.stock_name == sell.stock_name:
+            if abs(buy.stock_price - sell.stock_price) < 0.1 and abs(buy.stock_size - sell.stock_size) < 0.1:
+                trades.append((buy, sell))
+
+     #the output of matched orders
+if trades:
+    print("Matched orders:")
+    for buy, sell in trades:
+        print(f"Buy: {buy}, Sell: {sell}")
+else:
+    print("No matching orders found.")
+
+
+   #dictionary as a database to manage user login details
+user_db = {}
+
+
+def menu():
+    while True:
+        print("\nMenu:")
+        print("1. Register")
+        print("2. Login")
+        print("3. View Orderbook")
+        print("4. Add an order")
+        print("5. Cancel an order")
+        print("6. Replace an order")
+        print("7. Exit")
+        option = int(input("Please enter your choice: "))
+
+        if option == 1:
+            register()
+        elif option == 2:
+            login()
+        elif option == 3:
+            view_orderbook()
+        elif option == 4:
+            add_order()
+        elif option == 5:
+            cancel_order()
+        elif option == 6:
+            replace_order()
+        elif option == 7:
+            break
+        else:
+            print('Invalid! Try again.')
+
+
+def register():
+    username = input("Please enter your username: ")
+    if username in user_db:
+        print("This username has been taken")
+    else:
+        password = input("Please enter a password: ")
+        user_db[username] = password
+        print("Registration successfully completed.")
+
+
+def login():
+    username = input("Please enter your username: ")
+    if username in user_db:
+        password = input("Please enter your password: ")
+        if user_db[username] == password:
+            print("Login complete!")
+        else:
+            print("Incorrect password.")
+    else:
+        print("Username does not exist, please register first.")
+
+
+def add_order():
+    what_stock = input("What stock are you interested in? ")
+    if what_stock in stock_names:
+        buy_or_sell = input("Buy or sell? ").lower()
+
+        if buy_or_sell == "buy":
+            buy_price = float(input("Enter the buy price: "))
+            buy_size = int(input("Enter the buy size: "))
+            order_status = "Pending"
+
+
+            bids.append(Buyorder(round(random.randint(1, 500), 0), what_stock, buy_price, buy_size, order_status))
+            print(f"Buy order added for {what_stock} at {buy_price} for {buy_size} shares.")
+
+        elif buy_or_sell == "sell":
+            sell_price = float(input("Enter the sell price: "))
+            sell_size = int(input("Enter the sell size: "))
+            order_status = "Pending"
+
+            asks.append(Sellorder(round(random.randint(1, 500), 0), what_stock, sell_price, sell_size, order_status))
+            print(f"Sell order added for {what_stock} at {sell_price} for {sell_size} shares.")
+        else:
+            print("Invalid option. Please enter 'buy' or 'sell'.")
+    else:
+        print(f"Stock {what_stock} not found.")
+
+
+
+def view_orderbook():
+    view = input("Which order table would you like to view: buy or sell? ").lower()
+
+    if view == "buy":
+        if bids:
+            for i in bids:
+                print(i)
+        else:
+            print("No buy orders found.")
+    elif view == "sell":
+        if asks:
+            for j in asks:
+                print(j)
+        else:
+            print("No sell orders found.")
+    else:
+        print("Invalid input. Please enter 'buy' or 'sell'.")
+
+def cancel_order():
+    what_stock = input("Name of the stock you want to cancel: ")
+    buy_or_sell = input("What was the type of order? Buy or Sell? ").lower()
+
+    if what_stock in stock_names:
+        if buy_or_sell == "buy":
+            buy_price = float(input("Enter the buy price: "))
+            buy_size = int(input("Enter the buy size: "))
+
+            for order in bids:
+                if (order.stock_name == what_stock and
+                        order.stock_price == buy_price and
+                        order.stock_size == buy_size):
+                    order.order_status = "Cancelled"
+                    print("Buy order cancelled.")
+                    return
+            print("No matching buy order found.")
+
+        elif buy_or_sell == "sell":
+            sell_price = float(input("Enter the sell price: "))
+            sell_size = int(input("Enter the sell size: "))
+
+            for order in asks:
+                if (order.stock_name == what_stock and
+                        order.stock_price == sell_price and
+                        order.stock_size == sell_size):
+                    order.order_status = "Cancelled"
+                    print("Sell order cancelled.")
+                    return
+            print("No matching sell order found.")
+        else:
+            print("Invalid option. Please enter 'buy' or 'sell'.")
+    else:
+        print(f"Stock {what_stock} not found.")
+
+
+
+
+def replace_order():
+    what_stock = input("Name of the stock you want to replace: ")
+    buy_or_sell = input("What was the type of order? Buy or Sell? ").lower()
+
+    if what_stock in stock_names:  # Ensure stock exists
+        if buy_or_sell == "buy":
+            buy_price = float(input("Enter the buy price: "))
+            buy_size = int(input("Enter the buy size: "))
+
+            for order in bids:
+                if (order.stock_name == what_stock and
+                        order.stock_price == buy_price and
+                        order.stock_size == buy_size):
+                    order.order_status = "replaced"
+                    print("Buy order has been put on hold. Please go back to menu "
+                          "and select option 4 to add your new buy order.")
+                    return
+            print("No matching buy order found.")
+
+        elif buy_or_sell == "sell":
+            sell_price = float(input("Enter the sell price: "))
+            sell_size = int(input("Enter the sell size: "))
+
+            for order in asks:
+                if (order.stock_name == what_stock and
+                        order.stock_price == sell_price and
+                        order.stock_size == sell_size):
+                    order.order_status = "Replaced"
+                    print("Sell order has been put on hold. Please go back to menu "
+                          "and select option 4 to add your new sell order.")
+                    return
+            print("No matching sell order found.")
+        else:
+            print("Invalid option. Please enter 'buy' or 'sell'.")
+    else:
+        print(f"Stock {what_stock} not found.")
+
+
+menu()
