@@ -1,0 +1,90 @@
+import csv
+
+#Monthly sales and expenditure
+
+monthly_sales = {
+    'jan': 6226,
+    'feb': 1521,
+    'mar': 1842,
+    'apr': 2051,
+    'may': 1728,
+    'jun': 2138,
+    'jul': 7479,
+    'aug': 4434,
+    'sep': 3615,
+    'oct': 5472,
+    'nov': 7224,
+    'dec': 1812
+}
+
+monthly_expenditure = {
+    'jan': 3808,
+    'feb': 3373,
+    'mar': 3965,
+    'apr': 1098,
+    'may': 3046,
+    'jun': 2258,
+    'jul': 2084,
+    'aug': 2799,
+    'sep': 1649,
+    'oct': 1116,
+    'nov': 1431,
+    'dec': 3532
+}
+
+
+#Total sales and average sales
+
+total_sales = sum(monthly_sales.values())
+number_of_months = len(monthly_sales)
+average_sales = total_sales / number_of_months
+
+print(f"Average sales per month: ${average_sales:.2f}")
+
+
+
+#Lists for sales values and months
+
+sales_values = list(monthly_sales.values())
+months = list(monthly_sales.keys())
+
+
+
+#Calculating percentage change
+
+percentage_changes = []
+for i in range(1, len(sales_values)):
+    previous_sales = sales_values[i - 1]
+    current_sales = sales_values[i]
+    percent_change = ((current_sales - previous_sales) / previous_sales) * 100
+    percentage_changes.append(percent_change)
+
+for i in range(1, len(months)):
+    print(f"Percentage change from {months[i - 1].capitalize()} to {months[i].capitalize()}: {percentage_changes[i - 1]:.2f}%")
+
+
+
+#Finding highest and lowest sales months
+
+highest_sales_month = max(monthly_sales, key=lambda sales: monthly_sales[sales])
+lowest_sales_month = min(monthly_sales, key=lambda sales: monthly_sales[sales])
+
+print(f"The month with the highest sales is {highest_sales_month.capitalize()} with ${monthly_sales[highest_sales_month]:,.2f} in sales.")
+print(f"The month with the lowest sales is {lowest_sales_month.capitalize()} with ${monthly_sales[lowest_sales_month]:,.2f} in sales.")
+print(f"The total sales across all months is ${total_sales:,.2f}.")
+
+
+#Writing to CSV file using CSV module
+
+with open('sales.csv', 'w', newline='') as sales_csv_file:
+    csv_writer = csv.writer(sales_csv_file)
+    
+    csv_writer.writerow(['year', 'month', 'sales', 'expenditure'])
+    
+    for i in range(len(months)):
+        year = '2018'
+        month = months[i]
+        sales = monthly_sales[month]
+        expenditure = monthly_expenditure[month]
+        csv_writer.writerow([year, month, sales, expenditure])
+
